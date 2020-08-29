@@ -4,17 +4,47 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class DescriptionImage(models.Model):
-    image = models.ImageField()
+def max_file_size(file_value):
+    max_length = 3 * 1048576 #2.5 MiB
+    if file_value.size > max_length:
+        raise ValidationError('File cannot be greater than 3 MiB')
 
+def article_image(instance,filename):
+    return 'users/{}/article_images/{}'.format(instance.creator.id,instance.id)
+
+def profile_image(instance,filename):
+    return 'users/{}/profiles/{}'.format(instance.owner.id,instance.id)
+
+def sub_forums(instance,filename):
+    return 'forums/{}/description'.format(instance.id)
+
+def categories(instance,filename):
+    return 'forums/categories/{}'.format(instance.id)
+
+class ProfileQueryset(models.QuerySet):
+
+    def delete(self,*args,**kwargs):
+        for instance in self:
+            instance.profile_image.delete()
+        super(ProfileQueryset, self).delete(*args, **kwargs)
+
+
+class DescriptionImage(models.Model):
+    image = models.ImageField(upload_to=article_image,validators=[max_file_size])
+    creator = models.ForeignKey(User,related_name="image_uploader",null=True,on_delete=models.SET_NULL)
+    article = models.ForeignKey("Article",related_name="parent",on_delete=models.CASCADE,null=True)
+    
+# 1 Image
 class Subforum(models.Model):
     name = models.CharField(max_length=100)
-    images = models.ManyToManyField(DescriptionImage)
+    images = models.ImageField(upload_to=sub_forums,validators=[max_file_size],null=True)
 
+# 1 Image
 class Categories(models.Model):
     name = models.CharField(max_length=100)
-    image = models.ForeignKey(DescriptionImage,null=True,on_delete=models.SET_NULL)
+    image = models.ImageField(upload_to=categories,validators=[max_file_size],null=True)
 
+# Multiple Images
 class Article(models.Model):
     # Basic Fields
     name = models.CharField(max_length=100)
@@ -22,12 +52,13 @@ class Article(models.Model):
     date_created = models.DateTimeField(default=timezone.now)
     
     # Foreign Keys
-    images = models.ManyToManyField(DescriptionImage)
+    images = models.ManyToManyField(DescriptionImage,related_name="imgres")
     comments = models.ManyToManyField('comment')
     creator = models.ForeignKey(User,null=True,on_delete=models.SET_NULL)
     forum = models.ForeignKey(Subforum,on_delete=models.CASCADE)
 
     #Rating
+    views = models.IntegerField(default=0)
     likes = models.ForeignKey(User,null=True,on_delete=models.SET_NULL,related_name="art_likes")
     dislikes = models.ForeignKey(User,null=True,on_delete=models.SET_NULL,related_name="art_dislikes")
 
@@ -63,10 +94,12 @@ class Notification(models.Model):
     message = models.CharField(max_length=100)
     user = models.OneToOneField(User,on_delete=models.CASCADE)
 
+# 1 Image
 class UserProfile(models.Model):
+    objects = ProfileQueryset.as_manager()
     owner = models.OneToOneField(User,on_delete=models.CASCADE)
     nickname = models.CharField(max_length=100)
     bio = models.TextField(max_length=500)
-    profile_image = models.ImageField()
+    profile_image = models.ImageField(upload_to=profile_image,validators=[max_file_size])
     followers = models.ManyToManyField(User,blank=True,related_name="followers")
-    
+    public = models.BooleanField(default=True)
