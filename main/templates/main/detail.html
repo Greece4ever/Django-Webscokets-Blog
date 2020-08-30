@@ -20,7 +20,6 @@
                     <div class="carousel-item">
                         <img class="d-block w-100" src="/media/{{ image.image }}" alt="First slide">
                     </div>
-
                     {% endif %}
                 {% endfor %}
             </div>
@@ -36,12 +35,110 @@
           </div>
           {% endif %}
           
-    <p id="description_{{article.id}}" style="font-size: 15px;text-align: justify;" class="lead text-muted">{{ article.description|safe }}</p>
+    <p id="description_{{article.id}}" style="text-align: justify;cursor: text;margin-top: 20px;font-size: 18px;" class="lead text-muted">{{ article.description|safe }}</p>
     <script>
         document.getElementById("nam{{article.pk}}").href = '/articles/' + '{{article.name}}'.replace(/\s+/,'-') + '-{{article.pk}}'
     </script>
-    <code>Comment by me</code>
+    {% if article.comments.all.count > 0 %}
+    <span>{{ article.comments.all.count }} Comments</span>
+    {% else %}
+    <span >No comments</span>
+    {% endif %}
+    <hr>
+    <div class="comments">
+        {% if user.is_authenticated %}
+        <div class="media">
+            <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="/media/{{user.userprofile.profile_image}}" alt="Generic placeholder image">
+            <div class="media-body">
+              <textarea id="comment" style="margin-top: 10px;resize: none;" placeholder="Write a comment" class="form-control"></textarea>
+              <div id="buttons" style="float: right;margin-top: 10px;visibility: hidden;">
+                <button id="post" style="background-color: #333;color: #fff;margin-right: 10px;" class="btn btn primary">Post</button>
+                <button style="background-color: #6d0d0d;color: #fff;" id="cancel" class="btn btn danger">Cancel</button>
+              </div>
+
+            </div>
+          </div>          
+        {% endif %}
+    </div>
+
+    {% if article.comments.all.count > 0 %}
+        {% for comment in article.comments.all  %}
+        <div class="media">
+            <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="/media/{{user.userprofile.profile_image}}" alt="Generic placeholder image">
+            <div class="media-body">
+                <h5 class="mt-0">{{ comment.creator.userprofile.nickname }}</h5>
+                <p class="lead">
+                    {{ comment.description }}
+                </p>
+                <a id="reply{{comment.pk}}" class="reply" style="color: #007bff;">Reply to {{comment.creator.userprofile.nickname}}</a>
+                <span style="float: right;" class="text-muted">{{comment.date_created}}</span>
+                <div id="reply_{{comment.pk}}"></div>
+            </div>
+          </div>  
+        {% endfor %}
+    {% else %}
+          <div>No comments</div>
+    {% endif %}
 </div>
+<script>
+
+    const len = (args) => {
+        return args.length;
+    }
+
+    const href = window.location.href.split('-');
+    const target = `ws://${window.location.host}/ws/posts/${href[href.length-1]}`;
+    const socket = new WebSocket(target);
+
+    document.getElementById("comment").addEventListener("focus",() => {
+        document.getElementById("buttons").style.visibility = "visible";
+    })
+
+    document.getElementById("cancel").addEventListener("click",() => {
+        document.getElementById("comment").blur()
+        document.getElementById("buttons").style.visibility = "hidden";
+    })
+
+    document.getElementById("post").addEventListener("click",function() {
+        console.log("click")
+        const message = document.getElementById("comment").value;
+        const data = {
+            type : "comment",
+            data : message,
+            is_reply : false
+        }
+        socket.send(JSON.stringify(data))
+        })
+
+    socket.onmessage = (message) => {
+        console.log("Received message")
+        console.log(message)
+    }
+
+    document.querySelectorAll(".reply").forEach(element => {
+        element.addEventListener("click",(e) => {
+            const id = e.target.id.replace("reply",'');
+            console.log(id)
+            document.getElementById("reply_" + id).innerHTML = `
+            <div style="margin-top : 30px" class="media">
+            <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="/media/{{user.userprofile.profile_image}}" alt="Generic placeholder image">
+            <div class="media-body">
+              <textarea id="comment" style="margin-top: 10px;resize: none;" placeholder="${e.target.textContent}" class="form-control"></textarea>
+              <div id="buttons" style="float: right;margin-top: 10px;visibility: hidden;">
+                <button id="post" style="background-color: #333;color: #fff;margin-right: 10px;" class="btn btn primary">Post</button>
+                <button style="background-color: #6d0d0d;color: #fff;" id="cancel" class="btn btn danger">Cancel</button>
+              </div>
+
+            </div>
+          </div>          
+
+            `
+
+        })
+    })
+
+
+</script>
 
 {% endblock content %}
 
