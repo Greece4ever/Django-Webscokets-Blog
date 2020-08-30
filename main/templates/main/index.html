@@ -1,0 +1,75 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+{% for article in articles %}
+        <div style="margin-top : 20px;" class="container article">
+            {{article.date_created}}
+            <div style="float: right;">
+                <img style="width: 32px;border-radius: 64px;" src="/media/{{article.creator.userprofile.profile_image}}">
+            </div>
+        
+            <hr>
+            <div style="float: left;margin: 10px;" style="position: relative;" class="image">
+                {% if article.images %}
+                    {% for image in article.images.all %}
+                        <img class="external" style="width: 400px;" src="media/{{ image.image }}">
+                    {% endfor %}
+                {% else %}
+                    <b>No Image</b>
+                {% endif %}
+            </div>
+            <label class="name_pictuire" style="margin-top : 10px;position: relative;cursor: pointer;"><a id="nam{{article.pk}}" href="d" style="color: #333;text-decoration: none;">{{article.name}}</a>                
+                <span></span></label>
+            <p id="description_{{article.id}}" style="font-size: 15px;text-align: justify;" class="lead text-muted">{{ article.description }}</p>
+            <script>
+                document.getElementById("nam{{article.pk}}").href = '/articles/' + '{{article.name}}'.replace(/\s+/,'-') + '-{{article.pk}}'
+            </script>
+
+            <script>document.getElementById("description_{{article.id}}").textContent = document.getElementById("description_{{article.id}}").textContent.slice(0,600) + "..." </script>
+        </div>
+    {% endfor %}
+<style>
+
+    .name_pictuire {
+        width: 60%;
+    }
+
+    .external {
+        cursor: pointer;
+    }
+
+    .external:hover{
+        opacity: 0.9;
+    }
+
+
+    @media only screen and (max-width: 1200px) {
+        .name_pictuire {
+            width: 54% !important;
+        }
+    }
+
+    @media only screen and (max-width: 989px) {
+        .name_pictuire {
+            width: 35% !important;
+        }
+    }
+
+    @media only screen and (max-width: 770px) {
+        .name_pictuire {
+            width: 100% !important;
+        }
+
+        .container.article {
+            width: 450px !important;
+        }
+    }
+
+    @media only screen and (max-width: 450px) {
+        .container.article {
+            width: 100% !important;
+        }
+    }
+
+</style>
+{% endblock content %}

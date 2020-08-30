@@ -1,0 +1,29 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+<div style="margin-top : 20px;" class="container article">
+    {{article.date_created}}
+    <div style="float: right;">
+        <img style="width: 32px;border-radius: 64px;" src="/media/{{article.creator.userprofile.profile_image}}">
+    </div>
+
+    <hr>
+    <label class="name_pictuire" style="margin-top : 10px;position: relative;cursor: pointer;"><a id="nam{{article.pk}}" href="d" style="color: #333;text-decoration: none;"><h1>{{article.name}}</h1></a>
+    <div style="float: left;margin: 10px;" style="position: relative;" class="image">
+        {% if article.images %}
+            {% for image in article.images.all %}
+                <img class="external" onclick="window.location = window.location.host + '/articles/' + '{{article.name}}'.replace(/\s+/,'-') + '-{{article.pk}}'" style="width: 100%;" src="/media/{{ image.image }}">
+            {% endfor %}
+        {% else %}
+            <b>No Image</b>
+        {% endif %}
+    </div>        
+        <span></span></label>
+    <p id="description_{{article.id}}" style="font-size: 15px;text-align: justify;" class="lead text-muted">{{ article.description }}</p>
+    <script>
+        document.getElementById("nam{{article.pk}}").href = '/articles/' + '{{article.name}}'.replace(/\s+/,'-') + '-{{article.pk}}'
+    </script>
+</div>
+
+{% endblock content %}
+
