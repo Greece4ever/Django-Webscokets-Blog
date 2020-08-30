@@ -10,7 +10,7 @@ def max_file_size(file_value):
         raise ValidationError('File cannot be greater than 3 MiB')
 
 def article_image(instance,filename):
-    return 'users/{}/article_images/{}/{}'.format(instance.creator.id,instance.id,filename)
+    return 'users/{}/article_images/{}/{}'.format(instance.creator.pk,instance.pk,filename)
 
 def profile_image(instance,filename):
     return 'users/{}/profiles/{}/{}'.format(instance.owner.id,instance.id,filename)
@@ -60,14 +60,15 @@ class Article(models.Model):
     
     # Foreign Keys
     images = models.ManyToManyField(DescriptionImage,related_name="imgres",blank=True)
+    thumbnail = models.ForeignKey(DescriptionImage,related_name="thumbnail",blank=True,null=True,on_delete=models.SET_NULL)
     comments = models.ManyToManyField('comment',blank=True)
     creator = models.ForeignKey(User,null=True,on_delete=models.SET_NULL)
     forum = models.ForeignKey(Subforum,on_delete=models.CASCADE,null=True,default=None)
 
     #Rating
     views = models.IntegerField(default=0)
-    likes = models.ForeignKey(User,null=True,on_delete=models.SET_NULL,related_name="art_likes",blank=True)
-    dislikes = models.ForeignKey(User,null=True,on_delete=models.SET_NULL,related_name="art_dislikes",blank=True)
+    likes = models.ManyToManyField(User,blank=True,related_name="art_likes")
+    dislikes = models.ManyToManyField(User,blank=True,related_name="art_dislikes")
 
     #Category
     category = models.ManyToManyField(Categories,related_name='categories',blank=True)
@@ -84,8 +85,8 @@ class comment(models.Model):
     reply = models.ManyToManyField("self",related_name='replies')
 
     #Rating
-    likes = models.ForeignKey(User,null=True,on_delete=models.SET_NULL,related_name="com_likes")
-    dislikes = models.ForeignKey(User,null=True,on_delete=models.SET_NULL,related_name="com_dislikes")
+    likes = models.ManyToManyField(User,blank=True,related_name="com_likes")
+    dislikes = models.ManyToManyField(User,blank=True,related_name="com_dislikes")
 
 class message(models.Model):
     content = models.TextField(max_length=500)
