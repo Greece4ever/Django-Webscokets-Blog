@@ -1,8 +1,8 @@
+#Database tables
+
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-
-# Create your models here.
 
 def max_file_size(file_value):
     max_length = 3 * 1048576 #2.5 MiB

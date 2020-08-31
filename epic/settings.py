@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'channels',
+    'api.apps.ApiConfig',
     'main.apps.MainConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -135,3 +136,5 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+

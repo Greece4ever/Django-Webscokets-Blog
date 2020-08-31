@@ -22,15 +22,16 @@
             <li class="nav-item">
               <a class="nav-link" href="#">Link</a>
             </li>
+            {% if user.is_authenticated %}
+        
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Create
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#">Article</a>
+                <a class="dropdown-item" href="/auth/articles/create">Article</a>
               </div>
             </li>
-            {% if user.is_authenticated %}
                 <li class="nav-item">
                 <a class="nav-link" href="#">
                     <img style="width: 32px;border-radius: 64px;" src="/media/{{user.userprofile.profile_image}}">

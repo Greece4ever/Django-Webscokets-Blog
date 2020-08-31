@@ -1,6 +1,7 @@
-from django.shortcuts import render,HttpResponse,Http404
+from django.shortcuts import render,HttpResponse,Http404,redirect
 from .models import Article
 import re
+import datetime
 
 # Create your views here.
 
@@ -20,3 +21,13 @@ def detail_article(request,name):
     except:
         pass
     raise Http404("Not found")
+
+
+def article_create(request):
+    user = request.user
+    if not request.user:
+        return redirect("/")
+    context = {
+        'date' : datetime.datetime.now
+    }
+    return render(request,"main/create_article.html",context)

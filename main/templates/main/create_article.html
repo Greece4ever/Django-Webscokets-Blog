@@ -1,0 +1,117 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+
+{% block content %}
+<div style="margin-top: 10px;" class="container">
+    <input id="input_title" class="form-control" placeholder="Title">
+    <br>
+    <div class="content">
+    <button id="i" class="html">
+
+        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-type-italic" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.991 11.674L9.53 4.455c.123-.595.246-.71 1.347-.807l.11-.52H7.211l-.11.52c1.06.096 1.128.212 1.005.807L6.57 11.674c-.123.595-.246.71-1.346.806l-.11.52h3.774l.11-.52c-1.06-.095-1.129-.211-1.006-.806z"/>
+        </svg>          
+
+    </button>
+    <button id="b" class="html">
+
+
+        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-type-bold" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.21 13c2.106 0 3.412-1.087 3.412-2.823 0-1.306-.984-2.283-2.324-2.386v-.055a2.176 2.176 0 0 0 1.852-2.14c0-1.51-1.162-2.46-3.014-2.46H3.843V13H8.21zM5.908 4.674h1.696c.963 0 1.517.451 1.517 1.244 0 .834-.629 1.32-1.73 1.32H5.908V4.673zm0 6.788V8.598h1.73c1.217 0 1.88.492 1.88 1.415 0 .943-.643 1.449-1.832 1.449H5.907z"/>
+        </svg>
+
+    </button>
+    <button id="samp" class="html">
+
+
+        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-code-slash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0zm-.999-3.124a.5.5 0 0 1 .33.625l-4 13a.5.5 0 0 1-.955-.294l4-13a.5.5 0 0 1 .625-.33z"/>
+          </svg>
+
+
+    </button>
+    <button id="p" class="html">
+
+
+        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-paragraph" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M8 1h4.5a.5.5 0 0 1 0 1H11v12.5a.5.5 0 0 1-1 0V2H9v12.5a.5.5 0 0 1-1 0V1z"/>
+            <path d="M9 1v8H7a4 4 0 1 1 0-8h2z"/>
+          </svg>
+
+
+    </button>
+    <textarea id="post" style="border-top-right-radius: 0;border-top-left-radius: 0;min-height: 288px;" class="form-control"></textarea>
+    </div>
+    <div style="margin-top : 50px">
+        <div id="imgres" style="height: 100px;display: flex;" class="form-control">
+        <label style="position: absolute;left: 50%;transform: translateX(-50%);margin-top: 25px;cursor: pointer;" class="btn btn-default btn-file">
+            <kbd>Upload File</kbd>
+            <input multiple="true" id="file_upload" type="file" style="display: none;">
+        </label>
+        
+        </div>
+    </div>
+</div>
+<div style="margin-top: 100px;" class="container preview">
+    <label class="text-muted">{{date}}</label>
+    <div style="float: right;">
+        <img style="width: 32px;border-radius: 64px;" src="/media/{{user.userprofile.profile_image}}">
+    </div>
+    <hr>
+    <h2 id="title"></h2>
+    <img id="thumbnail" style="width: 100%;">
+    <p style="margin-top: 50px;" id="description" class="lead"></p> 
+</div>
+<style>
+    .content button{
+        border: 0;
+        width: 35px;
+        height: 35px;
+    }
+</style>
+<script src='{% static "main/copy.js" %}'></script>
+<script>
+
+    input_title.addEventListener("")
+
+
+    const textarea = document.getElementById("post");
+    var after = 0;
+
+    document.querySelectorAll(".html").forEach(element => {
+        element.addEventListener("click",(e) => {
+            console.log(e.target)
+            let end = textarea.selectionEnd;
+
+            let html_tag = e.target.id;
+            console.log(html_tag)
+            textarea.focus();
+            textarea.textContent += `<${html_tag}> </${html_tag}>`
+            textarea.selectionStart = html_tag.length + 2;
+        })
+    })
+
+    textarea.addEventListener("keydown",(e) => {
+        console.log(textarea.selectionStart)
+        console.log(textarea.selectionEnd)
+        if (e.keyCode === 9)
+        {
+            e.preventDefault()
+            textarea.value +='<b>hello</b>'
+            textarea.selectionStart = textarea.textContent.length
+            // console.log(`Variable after : ${after}`)
+            // console.log(textarea.selectionStart)
+            // e.preventDefault();
+            // textarea.focus();
+            // console.log(textarea.textContent.length);
+            // textarea.textContent += '   '
+            // textarea.selectionStart = after + 4
+            // after = Number(String(textarea.selectionStart)) + 4
+
+        }
+    })
+    
+</script>
+
+{% endblock content %}

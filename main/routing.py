@@ -1,3 +1,5 @@
+# Websocket protocol handler
+
 from . import consumers
 from django.urls import re_path
 
