@@ -1,7 +1,7 @@
 {% extends "main/base.html" %}
 
 {% block content %}
-<div style="margin-top : 20px;" class="container article">
+<div id="root" style="margin-top : 20px;" class="container article">
     {{article.date_created}}
     <div style="float: right;">
         <img style="width: 32px;border-radius: 64px;" src="/media/{{article.creator.userprofile.profile_image}}">
@@ -50,7 +50,8 @@
         <div class="media">
             <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="/media/{{user.userprofile.profile_image}}" alt="Generic placeholder image">
             <div class="media-body">
-              <textarea id="comment" style="margin-top: 10px;resize: none;" placeholder="Write a comment" class="form-control"></textarea>
+              <input style="visibility: hidden;position: absolute;" type="text">  <!--Added this to prevent focusing on input-->
+              <textarea  id="comment" style="margin-top: 10px;resize: none;" placeholder="Write a comment" class="form-control"></textarea>
               <div id="buttons" style="float: right;margin-top: 10px;visibility: hidden;">
                 <button id="post" style="background-color: #333;color: #fff;margin-right: 10px;" class="btn btn primary">Post</button>
                 <button style="background-color: #6d0d0d;color: #fff;" id="cancel" class="btn btn danger">Cancel</button>
@@ -60,27 +61,55 @@
           </div>          
         {% endif %}
     </div>
-
+    <div id="comments_detail">
     {% if article.comments.all.count > 0 %}
-        {% for comment in article.comments.all  %}
-        <div class="media">
-            <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="/media/{{user.userprofile.profile_image}}" alt="Generic placeholder image">
-            <div class="media-body">
-                <h5 class="mt-0">{{ comment.creator.userprofile.nickname }}</h5>
-                <p class="lead">
-                    {{ comment.description }}
-                </p>
-                <a id="reply{{comment.pk}}" class="reply" style="color: #007bff;">Reply to {{comment.creator.userprofile.nickname}}</a>
-                <span style="float: right;" class="text-muted">{{comment.date_created}}</span>
-                <div id="reply_{{comment.pk}}"></div>
+        {% for comment in article.comments.all|dictsortreversed:"date_created"  %}
+            {% if not comment.is_reply %}
+            <div style="margin-top: 50px;" class="media">
+                <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="/media/{{comment.creator.userprofile.profile_image}}" alt="Generic placeholder image">
+                <div class="media-body">
+                    <h5 class="mt-0">{{ comment.creator.userprofile.nickname }}</h5>
+                    <p class="lead">
+                        {{ comment.description|safe }}
+                    </p>
+                    
+                    <a id="reply{{comment.pk}}" class="reply" style="color: #007bff;">Reply to {{comment.creator.userprofile.nickname}}</a>
+                    <span style="float: right;" class="text-muted">{{comment.date_created}}</span>
+                    <div class="col" id="reply_{{comment.pk}}">
+                    </div>
+
+                </div>
+
+            </div>  
+            <div id="replies_{{comment.pk}}">
+            {% for reply in comment.reply.all %}
+                <div style="margin-top: 50px;margin-left: 100px;" class="media"> 
+                    <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="/media/{{reply.creator.userprofile.profile_image}}" alt="Generic placeholder image">
+                    <div class="media-body">
+                        <h5 class="mt-0">{{ reply.creator.userprofile.nickname }}</h5>
+                        <p class="lead">
+                            {{ reply.description }}
+                        </p>
+                    </div>
+                </div>
+
+            {% endfor %}
             </div>
-          </div>  
+
+
+            {% endif %}
         {% endfor %}
     {% else %}
           <div>No comments</div>
     {% endif %}
+    </div>
 </div>
 <script>
+
+
+    const handleXXS = (value) => {
+        return value.replace(/<(\s+)?script/,'').replace(/<(\s+)?(\/)(\s+)?script/,'')
+    }
 
     const len = (args) => {
         return args.length;
@@ -90,29 +119,71 @@
     const target = `ws://${window.location.host}/ws/posts/${href[href.length-1]}`;
     const socket = new WebSocket(target);
 
-    document.getElementById("comment").addEventListener("focus",() => {
-        document.getElementById("buttons").style.visibility = "visible";
-    })
+    //For making comments
 
-    document.getElementById("cancel").addEventListener("click",() => {
-        document.getElementById("comment").blur()
-        document.getElementById("buttons").style.visibility = "hidden";
-    })
-
-    document.getElementById("post").addEventListener("click",function() {
-        console.log("click")
-        const message = document.getElementById("comment").value;
-        const data = {
-            type : "comment",
-            data : message,
-            is_reply : false
-        }
-        socket.send(JSON.stringify(data))
+    try {
+        document.getElementById("comment").addEventListener("focus",() => {
+            document.getElementById("buttons").style.visibility = "visible";
         })
 
+        document.getElementById("cancel").addEventListener("click",() => {
+            document.getElementById("comment").blur()
+            document.getElementById("buttons").style.visibility = "hidden";
+        })
+
+        document.getElementById("post").addEventListener("click",function() {
+            console.log("click")
+            const message = document.getElementById("comment").value;
+            const data = {
+                type : "comment",
+                data : message,
+                is_reply : false
+            }
+            socket.send(JSON.stringify(data))
+            })
+    }
+    catch {}
+
     socket.onmessage = (message) => {
-        console.log("Received message")
-        console.log(message)
+        console.log("Received message");
+        message = JSON.parse(message.data);
+        const hash = Math.random().toString();
+        let marginLeft = message.is_reply ? "100px" : "" 
+        let html = `
+        <div style="margin-top: 50px;margin-left : ${marginLeft}" class="media">
+            <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="${message.img}" alt="Generic placeholder image">
+            <div class="media-body">
+                <h5 id="nam_${hash}" class="mt-0">                </h5>
+                <span class="badge badge-secondary">New</span>
+                <p class="lead">
+                    ${handleXXS(message.msg)}
+                </p>
+                <a id="reply{{comment.pk}}" class="reply" style="color: #007bff;">Reply to <i id="r_${hash}"></i></a>
+                <span style="float: right;" class="text-muted">${message.date_created}</span>
+                <div id="reply_${message.id}"></div>
+            </div>
+          </div>  
+        `;
+        if (message.is_reply)
+        {
+            document.getElementById(`replies_${message.parent_id}`).innerHTML = html + document.getElementById(`replies_${message.parent_id}`).innerHTML;
+        } else {
+            document.getElementById('comments_detail').innerHTML = html + document.getElementById('comments_detail').innerHTML;
+        }
+        document.getElementById(`nam_${hash}`).textContent = message.name;
+        document.getElementById(`r_${hash}`).textContent = message.name;
+    }
+
+    const handleReply = (parent_id) => {
+        console.log("Handling reply")
+        const data = {
+            type : "comment",
+            data : document.getElementById(`reply__${parent_id}`).value,
+            parent : parent_id,
+            is_reply : true
+        }
+        console.log(data)
+        socket.send(JSON.stringify(data));
     }
 
     document.querySelectorAll(".reply").forEach(element => {
@@ -123,21 +194,15 @@
             <div style="margin-top : 30px" class="media">
             <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="/media/{{user.userprofile.profile_image}}" alt="Generic placeholder image">
             <div class="media-body">
-              <textarea id="comment" style="margin-top: 10px;resize: none;" placeholder="${e.target.textContent}" class="form-control"></textarea>
-              <div id="buttons" style="float: right;margin-top: 10px;visibility: hidden;">
-                <button id="post" style="background-color: #333;color: #fff;margin-right: 10px;" class="btn btn primary">Post</button>
-                <button style="background-color: #6d0d0d;color: #fff;" id="cancel" class="btn btn danger">Cancel</button>
+              <textarea id="reply__${id}" style="margin-top: 10px;resize: none;" placeholder="${e.target.textContent}" class="form-control"></textarea>
+              <div id="das" style="float: right;margin-top: 10px;">
+                <button onclick="handleReply(${id})" style="background-color: #333;color: #fff;margin-right: 10px;" class="btn btn primary">Post</button>
+                <button onclick="document.getElementById('reply_${id}').innerHTML = ''" style="background-color: #6d0d0d;color: #fff;"  class="btn btn danger">Cancel</button>
               </div>
-
             </div>
-          </div>          
-
-            `
-
+          </div>`
         })
     })
-
-
 </script>
 
 {% endblock content %}

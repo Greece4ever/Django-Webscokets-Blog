@@ -88,6 +88,13 @@ class comment(models.Model):
     likes = models.ManyToManyField(User,blank=True,related_name="com_likes")
     dislikes = models.ManyToManyField(User,blank=True,related_name="com_dislikes")
 
+
+    def __str__(self):
+        x = ''
+        if self.is_reply:
+            x = "REPLY :"
+        return f'{x} {self.creator} at {self.likes.count()} likes'
+
 class message(models.Model):
     content = models.TextField(max_length=500)
 
