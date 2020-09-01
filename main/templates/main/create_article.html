@@ -9,6 +9,15 @@
         outline: none !important;
         box-shadow: none !important;
     }
+
+    .img-thumbnail:hover {
+        opacity: 0.6;
+        cursor: pointer;
+    }
+
+    .selected {
+        border: 5px solid rgb(25, 25, 94);
+    }
 </style>
 
 
@@ -118,9 +127,10 @@
         </div>
         <div id="thumbnails"  class="modal-body container">
         </div>
+        <label class="text-muted" style="margin-left: 30px;" id="thumnail_chosen_name"></label>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" data-dismiss="modal" class="btn btn-primary">Save changes</button>
         </div>
       </div>
     </div>

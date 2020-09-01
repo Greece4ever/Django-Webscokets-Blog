@@ -19,10 +19,7 @@
         </div>
     
     </h1>
-
     </a>
-
-
         <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
                 {% for image in article.images.all %}
@@ -48,7 +45,6 @@
             </a>
           </div>
           {% endif %}
-          
     <p id="description_{{article.id}}" style="text-align: justify;cursor: text;margin-top: 20px;font-size: 18px;" class="lead text-muted">{{ article.description|safe }}</p>
     <div>
         {{article.dislikes.all.count}}
@@ -93,14 +89,12 @@
                     <p class="lead">
                         {{ comment.description|safe }}
                     </p>
-                    
                     <a id="reply{{comment.pk}}" class="reply" style="color: #007bff;">Reply to {{comment.creator.userprofile.nickname}}</a>
                     <span style="float: right;" class="text-muted">{{comment.date_created}}</span>
                     <div class="col" id="reply_{{comment.pk}}">
                     </div>
 
                 </div>
-
             </div>  
             <div id="replies_{{comment.pk}}">
             {% for reply in comment.reply.all %}
@@ -113,11 +107,8 @@
                         </p>
                     </div>
                 </div>
-
             {% endfor %}
             </div>
-
-
             {% endif %}
         {% endfor %}
     {% endif %}

@@ -59,8 +59,8 @@ class Categories(models.Model):
 # Multiple Images
 class Article(models.Model):
     # Basic Fields
-    name = models.CharField(max_length=100)
-    description = models.TextField(max_length=2000)
+    name = models.CharField(max_length=200)
+    description = models.TextField(max_length=4000)
     date_created = models.DateTimeField(default=timezone.now)
     
     # Foreign Keys

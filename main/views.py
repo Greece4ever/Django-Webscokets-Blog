@@ -55,6 +55,12 @@ def article_create(request):
     
     usr_id = user.pk
 
+    if len(name) > 200:
+        return JsonResponse({"error" : "Title cannot be greater than 200!"})
+
+    if len(description) > 4000:
+        return JsonResponse({"error" : "Description cannot be greatear than 4000"})
+
     # """users/{}/article_images/{}/{}"""
 
     #Verify that each file is an Image
@@ -68,7 +74,12 @@ def article_create(request):
             assert file.size < 2500000 , "File too big"
         except:
             return JsonResponse({"error" : "Could not identify '{}' as a valid image type or was greater than 2.5 MiB".format(str(file))})
-        
+    
+    if len(file_names) == 0:
+        return JsonResponse({"error" : "You need to provide at least one image"})
+
+    if len(file_names) > 5:
+        return JsonResponse({"error" : "Cannot upload more than 5 images in a single Post"})
 
     #Create the database row
     article = Article(
@@ -83,6 +94,10 @@ def article_create(request):
 
     os.makedirs(target)
 
+    thumbnail = request.POST.get("thumbnail")
+
+    print(thumbnail)
+
     # Iterate over the images and write them
     for key in files:
         file = files[key]
@@ -93,8 +108,19 @@ def article_create(request):
         with open(os.path.join(target,file_name),'wb') as destination:
             for chunk in file.chunks():
                 destination.write(chunk)
-            img = DescriptionImage(creator=user,article=article,image=os.path.join("users","{}".format(user.pk),"article_images",str(article.pk),file_name))
-            img.save()
-            article.images.add(img)
+        img = DescriptionImage(creator=user,article=article,image=os.path.join("users","{}".format(user.pk),"article_images",str(article.pk),file_name))
+        img.save()
+        article.images.add(img)
+        if thumbnail == file_name:
+            print("Changing thumbnail")
+            article.thumbnail = img
+            print(article.thumbnail)
 
-    return JsonResponse({"success" : "hello"})
+
+    if thumbnail is None or thumbnail not in file_names:
+        print("Changing thumbnail")
+        article.thumbnail = article.images.all().first()
+        article.thumbnail.save()
+        print(article.thumbnail)
+
+    return JsonResponse({"id" : article.pk})
