@@ -10,7 +10,7 @@
         
             <hr>
             <div style="float: left;margin: 10px;" style="position: relative;" class="image">
-                <a id="img_{{article.pk}}" href="#"><img class="external" style="width: 400px;" src="media/{{ article.thumbnail.image }}"></a>
+                <a id="img_{{article.pk}}" href="#"><img id="img_{{article.pk}}__" class="external" style="width: 400px;" src="media/{{ article.thumbnail.image }}"></a>
             </div>
             <label class="name_pictuire" style="margin-top : 10px;position: relative;cursor: pointer;"><a id="nam{{article.pk}}" href="d" style="color: #333;text-decoration: none;">{{article.name}}</a>                
                 <span class="like_count" style="float: right;"><b id="likes_{{article.pk}}">{{article.likes.all.count}}</b>

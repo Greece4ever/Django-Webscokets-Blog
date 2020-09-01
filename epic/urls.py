@@ -25,6 +25,5 @@ urlpatterns = [
     path('',views.index,name="home"),
     path('articles/<str:name>/',views.detail_article,name="article_detail"),
     path('auth/articles/create',views.article_create,name="article_create"),
-    path('api/',include("api.urls"))
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

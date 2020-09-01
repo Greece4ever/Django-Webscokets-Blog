@@ -1,5 +1,7 @@
 /** Article Preview */ 
 
+var __default__;
+
 //for <script> and <... style=""> tags
 const handleXXS = (value) => {
     const removed_script = value.replace(/<(\s+)?script/,'').replace(/<(\s+)?(\/)(\s+)?script/,'');
@@ -18,22 +20,30 @@ title.addEventListener("input",() => {
 })
 
 description.addEventListener("input",() => {
-    console.log(description_preview.innerHTML.length)
     description_preview.innerHTML = handleXXS(description.value) //handle XXS html tags
 })
 
-
-document.getElementById("imgres").addEventListener("dragover",(e) => {
-    console.log(e)
-    e.preventDefault();
-})
+//For File uploading
 
 const upload = document.getElementById("file_upload");
 const imgres = document.getElementById("imgres");
 
+const handleClick = (id) => {
+    const elmnt = document.getElementById(id);
+    __default__ = elmnt.getAttribute("id");
+    elmnt.style.opacity = "0.4"
+}
+
+
 upload.addEventListener("input",(e) => {
     const files = e.target.files;
-    console.log(files)
-    let rnd;
-    document.getElementById("thumbnail").src = URL.createObjectURL(files[0])
+    document.getElementById("file_num").textContent = files.length;
+    document.getElementById("thumbnail").src = URL.createObjectURL(files[0]);
+    document.getElementById("thumbnail_chose").style.visibility = "visible";
+    const thumbnails = document.getElementById("thumbnails");
+    Array.from(files).forEach(file => {
+        thumbnails.innerHTML += `<img id="${file.filename}" onclick="handleClick(${file.filename})" data-toggle="tooltip" data-placement="right" title="${file.name}" class="img-thumbnail" src="${URL.createObjectURL(file)}"></div><br><br>`
+    })
+
 })
+

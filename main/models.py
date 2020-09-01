@@ -34,6 +34,11 @@ class DescriptionImage(models.Model):
     creator = models.ForeignKey(User,related_name="image_uploader",null=True,on_delete=models.SET_NULL)
     article = models.ForeignKey("Article",related_name="parent",on_delete=models.CASCADE,null=True)
     
+    def delete(self,*args,**kwargs):
+        storage, path = self.image.storage, self.image.path
+        super(DescriptionImage, self).delete(*args, **kwargs)
+        storage.delete(path)
+
 
     def __str__(self):
         return f'Image at {self.article}'

@@ -1,7 +1,15 @@
 from django.shortcuts import render,HttpResponse,Http404,redirect
-from .models import Article
+from django.http import HttpResponseForbidden,JsonResponse
+from .models import Article,DescriptionImage
 import re
 import datetime
+import json
+from PIL import Image
+from random import random
+import os
+from django.conf import settings
+from secrets import token_hex
+from random import randint
 
 # Create your views here.
 
@@ -25,9 +33,68 @@ def detail_article(request,name):
 
 def article_create(request):
     user = request.user
-    if not request.user:
+    if not user.is_authenticated:
         return redirect("/")
     context = {
         'date' : datetime.datetime.now
     }
-    return render(request,"main/create_article.html",context)
+    if request.method.lower() == 'get':
+        return render(request,"main/create_article.html",context)
+
+    name = request.POST.get("title")
+    description = request.POST.get("description")
+
+
+    if name is None or description is None:
+        return JsonResponse({"error" : "Description or title was not received in the request"})
+
+    files = request._get_files()
+
+    if len(files) == 0:
+        return JsonResponse({"error" : "There must be at least one image ascosiated with the post"})
+    
+    usr_id = user.pk
+
+    # """users/{}/article_images/{}/{}"""
+
+    #Verify that each file is an Image
+    file_names = []
+    for key in files:
+        file = files[key]
+        try:
+            test_is_valid = Image.open(file)
+            test_is_valid.verify()
+            file_names.append(str(file))
+            assert file.size < 2500000 , "File too big"
+        except:
+            return JsonResponse({"error" : "Could not identify '{}' as a valid image type or was greater than 2.5 MiB".format(str(file))})
+        
+
+    #Create the database row
+    article = Article(
+        creator=user,
+        name=name,
+        description=description,
+    )
+
+    article.save()
+
+    target = os.path.join(settings.BASE_DIR,"external","users","{}".format(user.pk),"article_images",str(article.pk))
+
+    os.makedirs(target)
+
+    # Iterate over the images and write them
+    for key in files:
+        file = files[key]
+        file_name = str(file)
+        if file_names.count(file_name) > 1:
+            while file_names.count(file_name) > 1:
+                file_name = token_hex(randint(1,10)) # Generate a unique name for that file 
+        with open(os.path.join(target,file_name),'wb') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+            img = DescriptionImage(creator=user,article=article,image=os.path.join("users","{}".format(user.pk),"article_images",str(article.pk),file_name))
+            img.save()
+            article.images.add(img)
+
+    return JsonResponse({"success" : "hello"})
