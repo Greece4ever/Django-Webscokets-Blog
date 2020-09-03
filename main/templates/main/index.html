@@ -3,6 +3,14 @@
 {% block content %}
 {% load static %}
 <link rel="stylesheet" type="text/css" href='{% static "main/index.css" %}'>
+<div id="new_posts" class="container" style="text-align: center;background-color: #e4e4e4;height: 40px;position: relative;cursor: pointer;visibility: hidden;position: absolute;">
+    <span style="position: absolute;left: 50%;transform: translateX(-50%);margin-top: 8px;">
+        <svg style="margin-right : 4px;margin-bottom: 1px;" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-up-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"/>
+        </svg>          
+        <b id="new">0</b> New Articles </span>
+</div>
+<div id="innerArticles">
 {% for article in articles %}
         <div style="margin-top : 20px;" class="container article">
             {{article.date_created}}
@@ -28,7 +36,11 @@
             </script>
 
             <script>document.getElementById("description_{{article.id}}").textContent = document.getElementById("description_{{article.id}}").textContent.slice(0,600) + "..." </script>
-        </div>
+            <br>
+            <br>
+        </div>        
     {% endfor %}
-<script src='{% static "main/index.js" %}'></script>
+</div>
+<script src='{% static "main/axios.js" %}' defer></script>
+<script src='{% static "main/index.js" %}' defer></script>
 {% endblock content %}

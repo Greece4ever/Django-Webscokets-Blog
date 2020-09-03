@@ -75,9 +75,6 @@ try {
         socket.send(JSON.stringify(data));
 
     })
-    
-
-
 }
 catch {
     console.error("User Authentication Failed aborting socket connection")

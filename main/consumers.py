@@ -20,12 +20,23 @@ class ArticleConsumer(WebsocketConsumer):
         usr = User.objects.filter(username=self.scope["user"]).first()
         article = Article.objects.filter(pk=int(data['article_id'])).first()
 
+        if 'key' in data:
+            async_to_sync(self.channel_layer.group_send)(
+                self.connection,
+                {
+                    'type': 'vote',
+                    'message': {
+                        "type" : "new_post",
+                        "id" : data.id,
+                    }
+                }
+            )
+            return -1
 
         if article.likes.filter(username=usr.username).exists():
             article.likes.remove(usr)
         else:
             article.likes.add(usr)
-
         if data['type'] == "vote":
             pass
         async_to_sync(self.channel_layer.group_send)(
@@ -43,6 +54,9 @@ class ArticleConsumer(WebsocketConsumer):
     def vote(self,event):
         message = json.dumps(event['message'])
         self.send(message)
+
+    def new_post(self,event):
+        return self.vote(event)
 
 
 def handleRating(connection,groups,specific,id,likes,dislikes):

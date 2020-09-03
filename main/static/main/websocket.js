@@ -2,6 +2,9 @@
 // It will give the id of the article
 // which in turn will be send in the websocket
 // and it will be appended to everyone connected
+
+var __id__;
+
 const confirm_submit = document.getElementById("create_article");
 
 const create_article = (formData,csrf_token) => {
@@ -62,14 +65,16 @@ confirm_submit.addEventListener("click",function(e){
             return null;
         }
         let id = response.data.id;
-        const socket = await new WebSocket("ws://" + window.location.host + "/ws/articles/"); //Connect with the socket
-        socket.send(id); //Send the id of the post
-        location.href = "/articles/" + title.replace(/\s+/g,"-") + `-${id}/`;
+        __id__ = id;
+        const socket = new WebSocket("ws://" + window.location.host + "/ws/articles/"); //Connect with the socket
 
     }
     createArticle();
-
 })
 
+socket.onopen = () => {
+    socket.send(id).then(() => {
+        location.href = "/articles/" + title.replace(/\s+/g,"-") + `-${id}/`;
+    })
 
-// <p>Είναι πλέον κοινά παραδεκτό ότι ένας αναγνώστης αποσπάται από το περιεχόμενο που διαβάζει, όταν εξετάζει τη διαμόρφωση μίας σελίδας.</p> Η ουσία της χρήσης του Lorem Ipsum είναι ότι έχει λίγο-πολύ μία ομαλή κατανομή γραμμάτων, αντίθετα με το να βάλει κανείς κείμενο όπως 'Εδώ θα μπει κείμενο, εδώ θα μπει κείμενο', κάνοντάς το να φαίνεται σαν κανονικό κείμενο. <p>Πολλά λογισμικά πακέτα ηλεκτρονικής σελιδοποίησης και επεξεργαστές ιστότοπων πλέον χρησιμοποιούν το Lorem Ipsum σαν προκαθορισμένο δείγμα κειμένου, και η αναζήτησ για τις λέξεις 'lorem ipsum' στο διαδίκτυο θα αποκαλύψει πολλά web site που βρίσκονται στο στάδιο της δημιουργίας. </p>Διάφορες εκδοχές έχουν προκύψει με το πέρασμα των χρόνων, άλλες φορές κατά λάθος, άλλες φορές σκόπιμα (με σκοπό το χιούμορ και άλλα συναφή).
+}; //Send the id of the post

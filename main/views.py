@@ -1,5 +1,5 @@
 from django.shortcuts import render,HttpResponse,Http404,redirect
-from django.http import HttpResponseForbidden,JsonResponse
+from django.http import HttpResponseForbidden,JsonResponse,HttpResponseNotFound
 from .models import Article,DescriptionImage
 import re
 import datetime
@@ -30,8 +30,8 @@ def detail_article(request,name):
         pass
     raise Http404("Not found")
 
-
 def article_create(request):
+
     user = request.user
     if not user.is_authenticated:
         return redirect("/")
@@ -112,15 +112,39 @@ def article_create(request):
         img.save()
         article.images.add(img)
         if thumbnail == file_name:
-            print("Changing thumbnail")
             article.thumbnail = img
-            print(article.thumbnail)
+            article.save()
 
 
     if thumbnail is None or thumbnail not in file_names:
-        print("Changing thumbnail")
         article.thumbnail = article.images.all().first()
-        article.thumbnail.save()
-        print(article.thumbnail)
+        article.save()
 
     return JsonResponse({"id" : article.pk})
+
+def get_articles(request):
+    """
+        For handling AJAX request from articles
+    """
+    if request.method.lower() != 'get':
+        return(HttpResponseForbidden("Invalid Permissiosn"))
+    print(request.headers)
+    articles = request.headers.get("Articles")
+    articles = json.loads(articles)
+    ArticleArray = {"success" : []}
+    for article in articles:
+        article = Article.objects.filter(pk=article).first()
+        if article is None:
+            continue
+        ArticleArray['success'].append({
+            "id" : article.pk,
+            "name" :  article.name,
+            "description" : article.description if len(article.description) < 600 else article.description[:600],
+            "likes" : article.likes.all().count(),
+            "user" : article.creator.userprofile.nickname,
+            "img_user" : article.creator.userprofile.profile_image.url,
+            "image" : article.thumbnail.image.url,
+            "date_created" : article.date_created.strftime('%A %d %B %Y')
+        })
+
+    return JsonResponse(ArticleArray)
