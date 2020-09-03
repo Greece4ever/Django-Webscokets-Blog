@@ -1,6 +1,8 @@
 {% extends "main/base.html" %}
 
 {% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href='{% static "main/index.css" %}'>
 {% for article in articles %}
         <div style="margin-top : 20px;" class="container article">
             {{article.date_created}}
@@ -28,91 +30,5 @@
             <script>document.getElementById("description_{{article.id}}").textContent = document.getElementById("description_{{article.id}}").textContent.slice(0,600) + "..." </script>
         </div>
     {% endfor %}
-<style>
-
-    .name_pictuire {
-        width: 60%;
-    }
-
-    .external {
-        cursor: pointer;
-    }
-
-    .external:hover{
-        opacity: 0.9;
-    }
-
-
-    @media only screen and (max-width: 1200px) {
-        .name_pictuire {
-            width: 54% !important;
-        }
-    }
-
-    @media only screen and (max-width: 989px) {
-        .name_pictuire {
-            width: 35% !important;
-        }
-    }
-
-    @media only screen and (max-width: 770px) {
-        .name_pictuire {
-            width: 100% !important;
-        }
-
-        .container.article {
-            width: 450px !important;
-        }
-    }
-
-    @media only screen and (max-width: 483px) {
-        .external {
-            width: 100% !important;
-        }
-    }
-
-
-    @media only screen and (max-width: 450px) {
-        .container.article {
-            width: 100% !important;
-        }
-    }
-
-    .bi.bi-hand-thumbs-up:hover{
-        width: 18px;
-        height: 18px;
-    }
-
-</style>
-<script>
-    //Websockets
-
-    const socket = new WebSocket(`ws://${window.location.host}/ws/articles/`)
-    document.querySelectorAll('.bi.bi-hand-thumbs-up').forEach(element => {
-        // console.log(element)
-        element.addEventListener("click",function(e) {
-            let target = e.target;
-            let data = {
-                type : "vote",
-                article_id : e.target.id.replace("img_","")
-            }
-            console.log(e.target.id)
-            console.log(data)
-            socket.send(JSON.stringify(data));
-        })
-    })
-
-
-    socket.onmessage = function(message) {
-        let data = JSON.parse(message.data);
-        console.log(data)
-        if (data.type == "vote")
-        {
-            console.log(data)
-            console.log("Changing likes")
-            console.log(document.getElementById(`likes_${data.id}`))
-            document.getElementById(`likes_${data.id}`).innerHTML = data.likes
-        }
-    }
-</script>
+<script src='{% static "main/index.js" %}'></script>
 {% endblock content %}

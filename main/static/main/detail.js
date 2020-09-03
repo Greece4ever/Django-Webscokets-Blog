@@ -32,8 +32,56 @@ try {
         }
         socket.send(JSON.stringify(data))
         })
+
+    document
+    
+    document.querySelectorAll(".com_rate").forEach(rate => {
+        rate.addEventListener('click',() => {
+            let id = rate.id.replace(/[a-zZ-a]+/g,'');
+            let vote = rate.id.includes("dislike") ? "dislike" : "like"
+            let specific = "comment";
+            let data = {
+                type : "vote",
+                data : "com_rate",
+                id : id,
+                vote : vote,
+                specific: specific
+            }
+            console.log(data)
+            socket.send(JSON.stringify(data));
+        })        
+    })
+    
+    document.getElementById("likes").addEventListener('click',() => {
+        const data = {
+            data : "art_like",
+            type : "rate",
+            vote :  "like",
+            specific : "article",
+        }
+        console.log(data)
+        socket.send(JSON.stringify(data));
+
+    })
+    
+    document.getElementById("dislikes").addEventListener('click',() => {
+        const data = {
+            data : "art_dis",
+            type : "rate",
+            vote :  "dislike",
+            specific : "article",
+        }
+        console.log(data)
+        socket.send(JSON.stringify(data));
+
+    })
+    
+
+
 }
-catch {}
+catch {
+    console.error("User Authentication Failed aborting socket connection")
+}
 
 //Adding ability to comment
 
@@ -53,13 +101,35 @@ const addCommentEvent = (element) => {
         </div>
       </div>`
     })
+}
 
+const updateArticleRating = (num_like,num_dislike) => {
+    document.getElementById("denmaresei").innerText = num_dislike;
+    document.getElementById("mouaresei").innerText = num_like;
+}
+
+const updateCommentRating = (id,num_like,num_dislike,) => {
+    document.getElementById("com_like_" + id + "_69").textContent = num_like;
+    document.getElementById("com_dislike_" + id + "_69").textContent = num_like;
 }
 
 
+
 socket.onmessage = (message) => {
-    console.log("Received message");
     message = JSON.parse(message.data);
+    console.log(message)
+    if (message.type == 'vote')
+    {
+        if (message.specific == 'comment')
+        {
+            updateCommentRating(`${message.id}`,message.likes,message.dislikes)
+        }
+        else {
+            updateArticleRating(message.likes,message.dislikes)
+        }
+        return -1;
+
+    }
     const hash = Math.random().toString();
     let marginLeft = message.is_reply ? "100px" : "" 
     let html = `
@@ -97,7 +167,6 @@ const handleReply = (parent_id) => {
         is_reply : true
     }
     console.log(data)
-    socket.send(JSON.stringify(data));
 }
 
 document.querySelectorAll(".reply").forEach(element => {

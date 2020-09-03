@@ -20,16 +20,13 @@ def index(request):
 
 def detail_article(request,name):
     id = name.split("-")[-1]   
-    print(id)
-    print(Article.objects.filter(pk=id).exists())
     try:
         if Article.objects.filter(pk=id).exists():
             context = {
                 'article' : Article.objects.filter(pk=id).first()
             }
             return render(request,"main/detail.html",context)
-    except Exception as f:
-        print(f)
+    except:
         pass
     raise Http404("Not found")
 

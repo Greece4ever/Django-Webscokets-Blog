@@ -1,0 +1,52 @@
+.name_pictuire {
+    width: 60%;
+}
+
+.external {
+    cursor: pointer;
+}
+
+.external:hover{
+    opacity: 0.9;
+}
+
+
+@media only screen and (max-width: 1200px) {
+    .name_pictuire {
+        width: 54% !important;
+    }
+}
+
+@media only screen and (max-width: 989px) {
+    .name_pictuire {
+        width: 35% !important;
+    }
+}
+
+@media only screen and (max-width: 770px) {
+    .name_pictuire {
+        width: 100% !important;
+    }
+
+    .container.article {
+        width: 450px !important;
+    }
+}
+
+@media only screen and (max-width: 483px) {
+    .external {
+        width: 100% !important;
+    }
+}
+
+
+@media only screen and (max-width: 450px) {
+    .container.article {
+        width: 100% !important;
+    }
+}
+
+.bi.bi-hand-thumbs-up:hover{
+    width: 18px;
+    height: 18px;
+}

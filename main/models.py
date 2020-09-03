@@ -142,13 +142,13 @@ class UserProfile(models.Model):
     followers = models.ManyToManyField(User,blank=True,related_name="followers")
     public = models.BooleanField(default=True)
 
-class Report(models.Model):
-    REPORT_TYPES = [
-        (models.ForeignKey(Article,related_name='article_report',on_delete=models.CASCADE),'Article'),
-        (models.ForeignKey(comment,related_name='comment_report',on_delete=models.CASCADE),'comment'),
-    ]
-    report_key = models.ForeignKey(choices=REPORT_TYPES)
-    creator = models.ForeignKey(User,related_name="reporter")
+# class Report(models.Model):
+#     REPORT_TYPES = [
+#         (models.ForeignKey(Article,related_name='article_report',on_delete=models.CASCADE),'Article'),
+#         (models.ForeignKey(comment,related_name='comment_report',on_delete=models.CASCADE),'comment'),
+#     ]
+#     report_key = models.ForeignKey(choices=REPORT_TYPES)
+#     creator = models.ForeignKey(User,related_name="reporter")
 
-    def __str__(self):
-        return f'{self.owner.username}'
+#     def __str__(self):
+#         return f'{self.owner.username}'

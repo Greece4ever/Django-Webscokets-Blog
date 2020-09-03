@@ -62,7 +62,7 @@ confirm_submit.addEventListener("click",function(e){
             return null;
         }
         let id = response.data.id;
-        const socket = new WebSocket("ws://" + window.location.host + "/ws/articles/"); //Connect with the socket
+        const socket = await new WebSocket("ws://" + window.location.host + "/ws/articles/"); //Connect with the socket
         socket.send(id); //Send the id of the post
         location.href = "/articles/" + title.replace(/\s+/g,"-") + `-${id}/`;
 
