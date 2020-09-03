@@ -79,6 +79,20 @@ class Article(models.Model):
     category = models.ManyToManyField(Categories,related_name='categories',blank=True)
 
 
+    def delete(self,*args,**kwargs):
+        """
+           Overwritting the delete method\n
+           to delete all ManyToMany objects,\n
+           since this is the only model,\n
+           that they are related to\n
+        """
+        self.images.all().delete()
+        self.comments.all().delete()
+        self.likes.all().delete()
+        self.dislikes.all().delete()
+        return super(Article,self).delete(*args,**kwargs)
+
+
     def __str__(self):
         return f'"{self.name}" by "{self.creator.username}"'
 
@@ -128,6 +142,13 @@ class UserProfile(models.Model):
     followers = models.ManyToManyField(User,blank=True,related_name="followers")
     public = models.BooleanField(default=True)
 
+class Report(models.Model):
+    REPORT_TYPES = [
+        (models.ForeignKey(Article,related_name='article_report',on_delete=models.CASCADE),'Article'),
+        (models.ForeignKey(comment,related_name='comment_report',on_delete=models.CASCADE),'comment'),
+    ]
+    report_key = models.ForeignKey(choices=REPORT_TYPES)
+    creator = models.ForeignKey(User,related_name="reporter")
 
     def __str__(self):
         return f'{self.owner.username}'

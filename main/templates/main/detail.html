@@ -1,6 +1,13 @@
 {% extends "main/base.html" %}
+{% load static %}
+
 
 {% block content %}
+<style>
+    .mr-3.profile_image:hover {
+        opacity: 0.7;
+    }
+</style>
 <div id="root" style="margin-top : 20px;" class="container article">
     {{article.date_created}}
     <div style="float: right;">
@@ -46,13 +53,15 @@
           </div>
           {% endif %}
     <p id="description_{{article.id}}" style="text-align: justify;cursor: text;margin-top: 20px;font-size: 18px;" class="lead text-muted">{{ article.description|safe }}</p>
+    <br>
     <div>
-        {{article.dislikes.all.count}}
-        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-hand-thumbs-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <span>Did <b>not</b> like this Article?</span>
+        <b style="margin-left: 10px;">{{article.dislikes.all.count}}</b>
+        <svg style="margin-left: 1px;" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-hand-thumbs-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" d="M6.956 14.534c.065.936.952 1.659 1.908 1.42l.261-.065a1.378 1.378 0 0 0 1.012-.965c.22-.816.533-2.512.062-4.51.136.02.285.037.443.051.713.065 1.669.071 2.516-.211.518-.173.994-.68 1.2-1.272a1.896 1.896 0 0 0-.234-1.734c.058-.118.103-.242.138-.362.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.094 2.094 0 0 0-.16-.403c.169-.387.107-.82-.003-1.149a3.162 3.162 0 0 0-.488-.9c.054-.153.076-.313.076-.465a1.86 1.86 0 0 0-.253-.912C13.1.757 12.437.28 11.5.28v1c.563 0 .901.272 1.066.56.086.15.121.3.121.416 0 .12-.035.165-.04.17l-.354.353.353.354c.202.202.407.512.505.805.104.312.043.44-.005.488l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.415-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.353.352.373.714.267 1.021-.122.35-.396.593-.571.651-.653.218-1.447.224-2.11.164a8.907 8.907 0 0 1-1.094-.17l-.014-.004H9.62a.5.5 0 0 0-.595.643 8.34 8.34 0 0 1 .145 4.725c-.03.112-.128.215-.288.255l-.262.066c-.306.076-.642-.156-.667-.519-.075-1.081-.239-2.15-.482-2.85-.174-.502-.603-1.267-1.238-1.977C5.597 8.926 4.715 8.23 3.62 7.93 3.226 7.823 3 7.534 3 7.28V3.279c0-.26.22-.515.553-.55 1.293-.138 1.936-.53 2.491-.869l.04-.024c.27-.165.495-.296.776-.393.277-.096.63-.163 1.14-.163h3.5v-1H8c-.605 0-1.07.08-1.466.217a4.823 4.823 0 0 0-.97.485l-.048.029c-.504.308-.999.61-2.068.723C2.682 1.815 2 2.434 2 3.279v4c0 .851.685 1.433 1.357 1.616.849.232 1.574.787 2.132 1.41.56.626.914 1.28 1.039 1.638.199.575.356 1.54.428 2.591z"/>
         </svg>
     </div>
-
+    <br>
     <script>
         document.getElementById("nam{{article.pk}}").href = '/articles/' + '{{article.name}}'.replace(/\s+/,'-') + '-{{article.pk}}'
     </script>
@@ -61,6 +70,11 @@
     {% else %}
     <span >No comments</span>
     {% endif %}
+    <span style="float: right;">
+        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-border-style" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-1zm0 4a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-1zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm8 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-4 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm8 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-4-4a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-1z"/>
+        </svg>          
+    </span>
     <hr>
     <div class="comments">
         {% if user.is_authenticated %}
@@ -83,14 +97,37 @@
         {% for comment in article.comments.all|dictsortreversed:"date_created"  %}
             {% if not comment.is_reply %}
             <div style="margin-top: 50px;" class="media">
-                <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="/media/{{comment.creator.userprofile.profile_image}}" alt="Generic placeholder image">
+                <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3 profile_image" src="/media/{{comment.creator.userprofile.profile_image}}" alt="Generic placeholder image">
                 <div class="media-body">
                     <h5 class="mt-0">{{ comment.creator.userprofile.nickname }}</h5>
-                    <p class="lead">
+                    <span style="float: right;">
+                        <div class="dropdown">
+                            <button style="border: 0;background: transparent;outline: none !important;" class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <svg style="margin-bottom: 10px;" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-sliders" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z"/>
+                                </svg>                                  
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            {% if user != comment.creator %}
+                              <a class="dropdown-item" href="#">Report <span style="margin-left: 10px;"><svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-flag-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12.435 12.435 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A19.626 19.626 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a19.587 19.587 0 0 0 1.349-.476l.019-.007.004-.002h.001"/>
+                              </svg>
+                            {% endif %}
+                              </span></a>
+                              {% if article.creator == user or comment.creator == user %}
+                                <a class="dropdown-item" href="#">Remove comment<svg style="margin-left: 10px;" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                                  </svg>
+                                  </a>
+                              {% endif %}
+                            </div>
+                          </div>                          
+                    </span>
+                    <p style="cursor: text;" class="lead">
                         {{ comment.description|safe }}
                     </p>
                     <a id="reply{{comment.pk}}" class="reply" style="color: #007bff;">Reply to {{comment.creator.userprofile.nickname}}</a>
-                    <span style="float: right;" class="text-muted">{{comment.date_created}}</span>
+                    <span style="float: right;cursor: text;" class="text-muted">{{comment.date_created}}</span>
                     <div class="col" id="reply_{{comment.pk}}">
                     </div>
 
@@ -114,129 +151,6 @@
     {% endif %}
     </div>
 </div>
-<script>
-
-
-    const handleXXS = (value) => {
-        return value.replace(/<(\s+)?script/,'').replace(/<(\s+)?(\/)(\s+)?script/,'')
-    }
-
-    const len = (args) => {
-        return args.length;
-    }
-
-    const href = window.location.href.split('-');
-    const target = `ws://${window.location.host}/ws/posts/${href[href.length-1]}`;
-    const socket = new WebSocket(target);
-
-    //For making comments
-
-    try {
-        document.getElementById("comment").addEventListener("focus",() => {
-            document.getElementById("buttons").style.visibility = "visible";
-        })
-
-        document.getElementById("cancel").addEventListener("click",() => {
-            document.getElementById("comment").blur()
-            document.getElementById("buttons").style.visibility = "hidden";
-        })
-
-        document.getElementById("post").addEventListener("click",function() {
-            console.log("click")
-            const message = document.getElementById("comment").value;
-            const data = {
-                type : "comment",
-                data : message,
-                is_reply : false
-            }
-            socket.send(JSON.stringify(data))
-            })
-    }
-    catch {}
-
-    //Adding ability to comment
-
-    const addCommentEvent = (element) => {
-        element.addEventListener("click",(e) => {
-            const id = e.target.id.replace("reply",'');
-            console.log(id)
-            document.getElementById("reply_" + id).innerHTML = `
-            <div style="margin-top : 30px" class="media">
-            <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="/media/{{user.userprofile.profile_image}}" alt="Generic placeholder image">
-            <div class="media-body">
-              <textarea id="reply__${id}" style="margin-top: 10px;resize: none;" placeholder="${e.target.textContent}" class="form-control"></textarea>
-              <div id="das" style="float: right;margin-top: 10px;">
-                <button onclick="handleReply(${id})" style="background-color: #333;color: #fff;margin-right: 10px;" class="btn btn primary">Post</button>
-                <button onclick="document.getElementById('reply_${id}').innerHTML = ''" style="background-color: #6d0d0d;color: #fff;"  class="btn btn danger">Cancel</button>
-              </div>
-            </div>
-          </div>`
-        })
-
-    }
-
-
-    socket.onmessage = (message) => {
-        console.log("Received message");
-        message = JSON.parse(message.data);
-        const hash = Math.random().toString();
-        let marginLeft = message.is_reply ? "100px" : "" 
-        let html = `
-        <div style="margin-top: 50px;margin-left : ${marginLeft}" class="media">
-            <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="${message.img}" alt="Generic placeholder image">
-            <div class="media-body">
-                <h5 id="nam_${hash}" class="mt-0">                </h5>
-                <span class="badge badge-secondary">New</span>
-                <p class="lead">
-                    ${handleXXS(message.msg)}
-                </p>
-                <a id="reply{{comment.pk}}" class="reply" style="color: #007bff;">Reply to <i id="r_${hash}"></i></a>
-                <span style="float: right;" class="text-muted">${message.date_created}</span>
-                <div class="reply" id="reply_${message.id}"></div>
-            </div>
-          </div>  
-        `;
-        if (message.is_reply)
-        {
-            document.getElementById(`replies_${message.parent_id}`).innerHTML = html + document.getElementById(`replies_${message.parent_id}`).innerHTML;
-        } else {
-            document.getElementById('comments_detail').innerHTML = html + document.getElementById('comments_detail').innerHTML;
-        }
-        document.getElementById(`nam_${hash}`).textContent = message.name;
-        document.getElementById(`r_${hash}`).textContent = message.name;
-        addCommentEvent(document.getElementById(`reply_${message.id}`))
-    }
-
-    const handleReply = (parent_id) => {
-        console.log("Handling reply")
-        const data = {
-            type : "comment",
-            data : document.getElementById(`reply__${parent_id}`).value,
-            parent : parent_id,
-            is_reply : true
-        }
-        console.log(data)
-        socket.send(JSON.stringify(data));
-    }
-
-    document.querySelectorAll(".reply").forEach(element => {
-        element.addEventListener("click",(e) => {
-            const id = e.target.id.replace("reply",'');
-            console.log(id)
-            document.getElementById("reply_" + id).innerHTML = `
-            <div style="margin-top : 30px" class="media">
-            <img style="width: 72px;margin-top: 5px;border-radius: 50px;" class="mr-3" src="/media/{{user.userprofile.profile_image}}" alt="Generic placeholder image">
-            <div class="media-body">
-              <textarea id="reply__${id}" style="margin-top: 10px;resize: none;" placeholder="${e.target.textContent}" class="form-control"></textarea>
-              <div id="das" style="float: right;margin-top: 10px;">
-                <button onclick="handleReply(${id})" style="background-color: #333;color: #fff;margin-right: 10px;" class="btn btn primary">Post</button>
-                <button onclick="document.getElementById('reply_${id}').innerHTML = ''" style="background-color: #6d0d0d;color: #fff;"  class="btn btn danger">Cancel</button>
-              </div>
-            </div>
-          </div>`
-        })
-    })
-</script>
-
+<script src='{% static "main/detail.js" %}'></script>
 {% endblock content %}
 
