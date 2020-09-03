@@ -12,7 +12,7 @@
 </div>
 <div id="innerArticles">
 {% for article in articles %}
-        <div style="margin-top : 20px;" class="container article">
+        <div style="margin-top : 50px;" class="container article">
             {{article.date_created}}
             <div style="float: right;">
                 <img style="width: 32px;border-radius: 64px;" src="/media/{{article.creator.userprofile.profile_image}}">
@@ -20,7 +20,9 @@
         
             <hr>
             <div style="float: left;margin: 10px;" style="position: relative;" class="image">
-                <a id="img_{{article.pk}}" href="#"><img id="img_{{article.pk}}__" class="external" style="width: 400px;" src="media/{{ article.thumbnail.image }}"></a>
+                <div style="width: 400px;">
+                    <a id="img_{{article.pk}}" href="#"><img id="img_{{article.pk}}__" class="external" style="max-width: 80%;max-height: 80%;" src="media/{{ article.thumbnail.image }}"></a>
+                </div>
             </div>
             <label class="name_pictuire" style="margin-top : 10px;position: relative;cursor: pointer;"><a id="nam{{article.pk}}" href="d" style="color: #333;text-decoration: none;">{{article.name}}</a>                
                 <span class="like_count" style="float: right;"><b id="likes_{{article.pk}}">{{article.likes.all.count}}</b>
@@ -36,7 +38,6 @@
             </script>
 
             <script>document.getElementById("description_{{article.id}}").textContent = document.getElementById("description_{{article.id}}").textContent.slice(0,600) + "..." </script>
-            <br>
             <br>
         </div>        
     {% endfor %}

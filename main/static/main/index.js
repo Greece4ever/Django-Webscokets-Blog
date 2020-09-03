@@ -5,7 +5,7 @@ const handleXXS = (value) => { //for XXS
     return removed_style;
 }
 
-var __articles__;
+var __articles__ = [];
 
 
 const socket = new WebSocket(`ws://${window.location.host}/ws/articles/`);
@@ -29,7 +29,6 @@ document.querySelectorAll('.bi.bi-hand-thumbs-up').forEach(element => {
             article_id : e.currentTarget.id.replace("img_","")
         }
         console.log(e.target.id)
-        console.log(data)
         socket.send(JSON.stringify(data));
     })
 })
@@ -65,17 +64,23 @@ const appendArticle = (response) => {
 }
 
 async function getArticle() {
-    const resposne = await queryArticle([12]);
+    const resposne = await queryArticle(__articles__);
     appendArticle(resposne.data.success);
 }
 
 document.getElementById("new_posts").addEventListener("click",() => {
     getArticle();
+    document.getElementById("new_posts").style.visibility = "hidden";
+    document.getElementById("new_posts").style.position = "absolute";
+    __articles__ = [];
+    document.getElementById("new").innerHTML = 0;
+
 })
 
 //Receiving data
 socket.onmessage = function(message) {
     let data = JSON.parse(message.data);
+    console.log(data)
     console.log(data)
     if (data.type == "vote")
     {
@@ -85,7 +90,10 @@ socket.onmessage = function(message) {
         document.getElementById(`likes_${data.id}`).innerHTML = data.likes
     }
     else { //post
-        console.log("Pushing data")
         __articles__.push(data.id);
+        document.getElementById("new").innerHTML = __articles__.length;
+        document.getElementById("new_posts").style.visibility = "visible";
+        document.getElementById("new_posts").style.position = "relative";
+
     }
 }
