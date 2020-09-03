@@ -5,6 +5,8 @@ const handleXXS = (value) => { //for XXS
     return removed_style;
 }
 
+var __articles__;
+
 
 const socket = new WebSocket(`ws://${window.location.host}/ws/articles/`);
 
@@ -31,19 +33,6 @@ document.querySelectorAll('.bi.bi-hand-thumbs-up').forEach(element => {
         socket.send(JSON.stringify(data));
     })
 })
-
-//Receiving data
-socket.onmessage = function(message) {
-    let data = JSON.parse(message.data);
-    console.log(data)
-    if (data.type == "vote")
-    {
-        console.log(data)
-        console.log("Changing likes")
-        console.log(document.getElementById(`likes_${data.id}`))
-        document.getElementById(`likes_${data.id}`).innerHTML = data.likes
-    }
-}
 
 const appendArticle = (response) => {
     response.forEach(article => {
@@ -84,3 +73,19 @@ document.getElementById("new_posts").addEventListener("click",() => {
     getArticle();
 })
 
+//Receiving data
+socket.onmessage = function(message) {
+    let data = JSON.parse(message.data);
+    console.log(data)
+    if (data.type == "vote")
+    {
+        console.log(data)
+        console.log("Changing likes")
+        console.log(document.getElementById(`likes_${data.id}`))
+        document.getElementById(`likes_${data.id}`).innerHTML = data.likes
+    }
+    else { //post
+        console.log("Pushing data")
+        __articles__.push(data.id);
+    }
+}

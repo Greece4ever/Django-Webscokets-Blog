@@ -26,6 +26,6 @@ urlpatterns = [
     path('articles/<str:name>/',views.detail_article,name="article_detail"),
     path('auth/articles/create',views.article_create,name="article_create"),
     path("auth/articles/view",views.get_articles,name="get_artcle"),
-
+    path("auth/articles/callback/remove/<int:id>",views.RemoveArticleView,name='remove_article')
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

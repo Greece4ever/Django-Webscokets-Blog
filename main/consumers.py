@@ -17,9 +17,6 @@ class ArticleConsumer(WebsocketConsumer):
 
     def receive(self,text_data):        
         data = json.loads(text_data)
-        usr = User.objects.filter(username=self.scope["user"]).first()
-        article = Article.objects.filter(pk=int(data['article_id'])).first()
-
         if 'key' in data:
             async_to_sync(self.channel_layer.group_send)(
                 self.connection,
@@ -27,11 +24,16 @@ class ArticleConsumer(WebsocketConsumer):
                     'type': 'vote',
                     'message': {
                         "type" : "new_post",
-                        "id" : data.id,
+                        "id" : data['id'],
                     }
                 }
             )
+            print("SENDING DATA")
             return -1
+
+        usr = User.objects.filter(username=self.scope["user"]).first()
+        article = Article.objects.filter(pk=int(data['article_id'])).first()
+        print("RECEVED DATA")
 
         if article.likes.filter(username=usr.username).exists():
             article.likes.remove(usr)
@@ -56,6 +58,7 @@ class ArticleConsumer(WebsocketConsumer):
         self.send(message)
 
     def new_post(self,event):
+        print("DISPATCH")
         return self.vote(event)
 
 

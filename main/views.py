@@ -148,3 +148,14 @@ def get_articles(request):
         })
 
     return JsonResponse(ArticleArray)
+
+
+def RemoveArticleView(request,id):
+    user = request.user
+    article = Article.objects.filter(pk=id).first()
+    if article is None:
+        return HttpResponseForbidden("Cannot delete something that doesn't exist")
+    if article.creator != user:
+        return HttpResponseForbidden("Cannot delete someone else's post!")
+    article.delete()
+    return redirect("/")

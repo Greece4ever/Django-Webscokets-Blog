@@ -66,15 +66,18 @@ confirm_submit.addEventListener("click",function(e){
         }
         let id = response.data.id;
         __id__ = id;
-        const socket = new WebSocket("ws://" + window.location.host + "/ws/articles/"); //Connect with the socket
-
+        const socket = await new WebSocket("ws://" + window.location.host + "/ws/articles/"); //Connect with the socket
+        socket.onopen = () => {
+            socket.send(JSON.stringify({"key" : 1,id : __id__}))
+            location.href = "/articles/" + title.replace(/\s+/g,"-") + `-${id}/`;
+        }
     }
     createArticle();
 })
 
-socket.onopen = () => {
-    socket.send(id).then(() => {
-        location.href = "/articles/" + title.replace(/\s+/g,"-") + `-${id}/`;
-    })
+// socket.onopen = () => {
+//     socket.send({"key" : 1,id : __id__}).then(() => {
+//         location.href = "/articles/" + title.replace(/\s+/g,"-") + `-${id}/`;
+//     })
 
-}; //Send the id of the post
+// }; //Send the id of the post
